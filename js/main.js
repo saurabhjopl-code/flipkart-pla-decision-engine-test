@@ -5,7 +5,7 @@ import { generateExecutiveReport } from "./reports/executiveReport.js";
 import { renderExecutiveDashboard } from "./ui/dashboardUI.js";
 
 /* ======================================
-   CONFIG — GOOGLE SHEET LINKS
+   CONFIG — GOOGLE SHEETS
 ====================================== */
 
 const CONFIG = {
@@ -18,17 +18,22 @@ const CONFIG = {
 };
 
 /* ======================================
-   APP STATE
+   CENTRAL APP STATE
 ====================================== */
 
 const appState = {
+  raw: {},
   processed: {
     monthlyData: [],
     dailyData: []
   },
   filters: {
+    months: [],
+    dateRange: null,
+    search: "",
     datasetMode: "monthly"
-  }
+  },
+  activeReport: "executive"
 };
 
 /* ======================================
@@ -36,11 +41,13 @@ const appState = {
 ====================================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
+  bindSidebar();
+  bindSearch();
   await loadData();
 });
 
 /* ======================================
-   LOAD & PROCESS DATA
+   LOAD DATA
 ====================================== */
 
 async function loadData() {
@@ -81,7 +88,7 @@ async function loadData() {
 
     updateProgress(100);
 
-    renderExecutive();
+    renderApp();
 
   } catch (error) {
     console.error("Data Load Error:", error);
@@ -89,7 +96,7 @@ async function loadData() {
 }
 
 /* ======================================
-   MONTHLY DATASET BUILDER
+   DATASET BUILDERS
 ====================================== */
 
 function buildMonthlyDataset(sales, traffic, stock, dimSku) {
@@ -104,21 +111,16 @@ function buildMonthlyDataset(sales, traffic, stock, dimSku) {
     const skuRow = skuMap[row.mpsku] || {};
 
     const finalUnits = Number(row.final_sale_units) || 0;
-    const dailyVelocity = finalUnits / 30;
 
     return {
       ...row,
       ...trafficRow,
       ...skuRow,
       total_stock: Number(stockRow.total_stock) || 0,
-      daily_velocity: dailyVelocity
+      daily_velocity: finalUnits / 30
     };
   });
 }
-
-/* ======================================
-   DAILY DATASET BUILDER
-====================================== */
 
 function buildDailyDataset(sales, traffic, stock, dimSku) {
   const stockMap = mapByKey(stock, "mpsku");
@@ -145,6 +147,82 @@ function buildDailyDataset(sales, traffic, stock, dimSku) {
 }
 
 /* ======================================
+   FILTER ENGINE (BASIC VERSION)
+====================================== */
+
+function applyFilters(data) {
+  let result = [...data];
+
+  if (appState.filters.search) {
+    const term = appState.filters.search.toLowerCase();
+    result = result.filter(r =>
+      String(r.mpsku).toLowerCase().includes(term)
+    );
+  }
+
+  return result;
+}
+
+/* ======================================
+   RENDER APP
+====================================== */
+
+function renderApp() {
+  const dataset =
+    appState.filters.datasetMode === "daily"
+      ? appState.processed.dailyData
+      : appState.processed.monthlyData;
+
+  const filtered = applyFilters(dataset);
+
+  if (appState.activeReport === "executive") {
+    const report = generateExecutiveReport(
+      filtered,
+      appState.filters.datasetMode
+    );
+    renderExecutiveDashboard(report);
+  }
+}
+
+/* ======================================
+   SIDEBAR NAV
+====================================== */
+
+function bindSidebar() {
+  document.querySelectorAll(".menu-item").forEach(item => {
+    item.addEventListener("click", () => {
+      document
+        .querySelectorAll(".menu-item")
+        .forEach(i => i.classList.remove("active"));
+
+      item.classList.add("active");
+
+      const text = item.innerText.toLowerCase();
+
+      if (text.includes("executive")) {
+        appState.activeReport = "executive";
+      }
+
+      renderApp();
+    });
+  });
+}
+
+/* ======================================
+   SEARCH
+====================================== */
+
+function bindSearch() {
+  const input = document.getElementById("sku-search");
+  if (!input) return;
+
+  input.addEventListener("input", e => {
+    appState.filters.search = e.target.value;
+    renderApp();
+  });
+}
+
+/* ======================================
    UTILITIES
 ====================================== */
 
@@ -164,25 +242,6 @@ function groupByCompositeKey(array, key1, key2) {
   });
   return map;
 }
-
-/* ======================================
-   RENDER EXECUTIVE
-====================================== */
-
-function renderExecutive() {
-  const datasetMode = appState.filters.datasetMode;
-  const data =
-    datasetMode === "daily"
-      ? appState.processed.dailyData
-      : appState.processed.monthlyData;
-
-  const report = generateExecutiveReport(data, datasetMode);
-  renderExecutiveDashboard(report);
-}
-
-/* ======================================
-   PROGRESS BAR
-====================================== */
 
 function updateProgress(percent) {
   const fill = document.getElementById("progress-bar-fill");
