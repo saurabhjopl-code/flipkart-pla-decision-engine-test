@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flipkart Analytics & Decision Engine</title>
+
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+</head>
+<body>
+
+<div id="app-container">
+
+  <!-- HEADER -->
+  <header id="app-header">
+    <div id="header-left">
+      <img src="./assets/logo.png" alt="Logo" id="app-logo" />
+    </div>
+
+    <div id="header-center">
+      <h1 id="app-title">Flipkart Analytics & Decision Engine</h1>
+    </div>
+
+    <div id="header-right">
+      <button class="export-btn">Export</button>
+    </div>
+  </header>
+
+  <!-- PROGRESS BAR -->
+  <section id="progress-section">
+    <div id="progress-bar-container">
+      <div id="progress-bar-fill"></div>
+      <span id="progress-percentage">0%</span>
+    </div>
+    <div id="progress-status">Loading Data...</div>
+  </section>
+
+  <!-- BODY -->
+  <div id="app-body">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="expanded">
+      <button id="sidebar-toggle">☰</button>
+
+      <nav id="sidebar-menu">
+        <div class="menu-item active">Executive Dashboard</div>
+        <div class="menu-item">SKU Performance</div>
+        <div class="menu-item">Funnel Analysis</div>
+        <div class="menu-item">Return Impact</div>
+        <div class="menu-item">Inventory Health</div>
+        <div class="menu-item">Opportunity</div>
+        <div class="menu-item">Growth & Trend</div>
+        <div class="menu-item">Action Engine</div>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main id="main-content">
+
+      <!-- FILTERS + SEARCH -->
+      <section id="filter-search-section">
+
+        <div id="filters-left">
+          <div class="filter-box">Month</div>
+          <div class="filter-box">Date Range</div>
+          <div class="filter-box">Category</div>
+          <div class="filter-box">Brand</div>
+          <div class="filter-box">Vertical</div>
+          <div class="filter-box">Style</div>
+        </div>
+
+        <div id="search-right">
+          <input type="text" id="sku-search" placeholder="Search SKU / Style..." />
+        </div>
+
+      </section>
+
+      <!-- SUMMARY SECTION -->
+      <section id="summary-section">
+        <div class="summary-card"></div>
+        <div class="summary-card"></div>
+        <div class="summary-card"></div>
+        <div class="summary-card"></div>
+        <div class="summary-card"></div>
+        <div class="summary-card"></div>
+      </section>
+
+      <!-- REPORT SECTION -->
+      <section id="report-section">
+
+        <div id="report-header">
+          <h2>Report</h2>
+        </div>
+
+        <div id="report-table-container">
+          <!-- Table will render here -->
+        </div>
+
+        <div id="load-more-container">
+          <button id="load-more-btn">Load More</button>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+
+</body>
+</html>
