@@ -1,7 +1,17 @@
 // js/main.js
 
+import { fetchCSV } from "./data/fetchEngine.js";
 import { generateExecutiveReport } from "./reports/executiveReport.js";
 import { renderExecutiveDashboard } from "./ui/dashboardUI.js";
+
+/* ======================================
+   🔧 CONFIG — PUT YOUR SHEET URLs HERE
+====================================== */
+
+const CONFIG = {
+  monthlyURL: "PASTE_MONTHLY_SUMMARY_CSV_URL_HERE",
+  dailyURL: "PASTE_DAILY_SUMMARY_CSV_URL_HERE"
+};
 
 /* ======================================
    APP STATE
@@ -18,27 +28,37 @@ const appState = {
 };
 
 /* ======================================
-   INIT APP
+   INIT
 ====================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  simulateDataLoad();
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadData();
 });
 
 /* ======================================
-   SIMULATED DATA (Replace with real fetch later)
+   LOAD DATA
 ====================================== */
 
-function simulateDataLoad() {
-  const monthlyData = generateMockMonthlyData();
-  const dailyData = generateMockDailyData();
+async function loadData() {
+  try {
+    updateProgress(20);
 
-  appState.processed.monthlyData = monthlyData;
-  appState.processed.dailyData = dailyData;
+    const monthlyData = await fetchCSV(CONFIG.monthlyURL);
+    updateProgress(60);
 
-  updateProgress(100);
+    const dailyData = await fetchCSV(CONFIG.dailyURL);
+    updateProgress(90);
 
-  renderExecutive();
+    appState.processed.monthlyData = monthlyData;
+    appState.processed.dailyData = dailyData;
+
+    updateProgress(100);
+
+    renderExecutive();
+
+  } catch (error) {
+    console.error("Data Load Error:", error);
+  }
 }
 
 /* ======================================
@@ -47,6 +67,7 @@ function simulateDataLoad() {
 
 function renderExecutive() {
   const datasetMode = appState.filters.datasetMode;
+
   const data =
     datasetMode === "daily"
       ? appState.processed.dailyData
@@ -55,92 +76,6 @@ function renderExecutive() {
   const report = generateExecutiveReport(data, datasetMode);
 
   renderExecutiveDashboard(report);
-}
-
-/* ======================================
-   MOCK DATA GENERATORS
-====================================== */
-
-function generateMockMonthlyData() {
-  const months = ["2025-01", "2025-02", "2025-03", "2025-04"];
-  const skus = ["SKU1", "SKU2", "SKU3", "SKU4", "SKU5"];
-
-  const data = [];
-
-  months.forEach(month => {
-    skus.forEach(sku => {
-      const views = randomBetween(1000, 5000);
-      const clicks = randomBetween(200, 800);
-      const finalUnits = randomBetween(50, 300);
-      const revenue = finalUnits * randomBetween(500, 1200);
-      const grossUnits = finalUnits + randomBetween(10, 50);
-      const cancelUnits = randomBetween(5, 20);
-      const returnUnits = randomBetween(5, 25);
-      const stock = randomBetween(200, 1000);
-      const dailyVelocity = finalUnits / 30;
-
-      data.push({
-        mpsku: sku,
-        month,
-        views,
-        clicks,
-        final_sale_units: finalUnits,
-        final_sale_amount: revenue,
-        gross_units: grossUnits,
-        cancellation_units: cancelUnits,
-        return_units: returnUnits,
-        total_stock: stock,
-        daily_velocity: dailyVelocity
-      });
-    });
-  });
-
-  return data;
-}
-
-function generateMockDailyData() {
-  const dates = ["2025-04-01", "2025-04-02", "2025-04-03", "2025-04-04"];
-  const skus = ["SKU1", "SKU2", "SKU3"];
-
-  const data = [];
-
-  dates.forEach(date => {
-    skus.forEach(sku => {
-      const views = randomBetween(200, 800);
-      const clicks = randomBetween(50, 200);
-      const finalUnits = randomBetween(10, 50);
-      const revenue = finalUnits * randomBetween(500, 1200);
-      const grossUnits = finalUnits + randomBetween(2, 10);
-      const cancelUnits = randomBetween(1, 5);
-      const returnUnits = randomBetween(1, 6);
-      const stock = randomBetween(100, 400);
-      const dailyVelocity = finalUnits;
-
-      data.push({
-        mpsku: sku,
-        date,
-        views,
-        clicks,
-        final_sale_units: finalUnits,
-        final_sale_amount: revenue,
-        gross_units: grossUnits,
-        cancellation_units: cancelUnits,
-        return_units: returnUnits,
-        total_stock: stock,
-        daily_velocity: dailyVelocity
-      });
-    });
-  });
-
-  return data;
-}
-
-/* ======================================
-   UTILITIES
-====================================== */
-
-function randomBetween(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /* ======================================
