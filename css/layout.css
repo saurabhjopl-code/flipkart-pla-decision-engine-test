@@ -80,3 +80,30 @@
   padding: 20px;
   border-radius: 8px;
 }
+
+#executive-summary-container {
+  margin-bottom: 30px;
+}
+
+#executive-charts-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.chart-row.full-width {
+  width: 100%;
+}
+
+.chart-row.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.chart-box {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  min-height: 350px;
+}
