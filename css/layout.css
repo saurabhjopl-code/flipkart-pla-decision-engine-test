@@ -107,3 +107,8 @@
   padding: 20px;
   min-height: 350px;
 }
+
+#app-logo {
+  height: 36px;
+  object-fit: contain;
+}
