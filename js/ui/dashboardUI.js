@@ -3,17 +3,108 @@
 import { renderChart } from "./chartsUI.js";
 
 export function renderExecutiveDashboard(report) {
-  if (!report || report.reportId !== "executive") {
-    console.warn("Invalid report passed to Executive Dashboard");
-    return;
-  }
+  const reportSection = document.getElementById("report-section");
+  if (!reportSection) return;
+
+  // 🔥 Clear entire section before rendering
+  reportSection.innerHTML = "";
+
+  // Create executive container
+  const container = document.createElement("section");
+  container.id = "executive-dashboard";
+
+  container.innerHTML = `
+    <div id="executive-summary-container" class="summary-grid"></div>
+
+    <div id="executive-charts-container">
+
+      <div class="chart-row full-width">
+        <div id="chart-revenueTrend" class="chart-box"></div>
+      </div>
+
+      <div class="chart-row two-col">
+        <div id="chart-conversionFunnel" class="chart-box"></div>
+        <div id="chart-qualityMetrics" class="chart-box"></div>
+      </div>
+
+      <div class="chart-row full-width">
+        <div id="chart-inventoryHealth" class="chart-box"></div>
+      </div>
+
+    </div>
+  `;
+
+  reportSection.appendChild(container);
 
   renderSummary(report.summary);
   renderCharts(report.charts);
 }
 
 /* ======================================
-   SUMMARY RENDERING
+   TABLE VIEW RENDER (For other reports)
+====================================== */
+
+export function renderTableReport(columns, rows, loadCount = 50) {
+  const reportSection = document.getElementById("report-section");
+  if (!reportSection) return;
+
+  reportSection.innerHTML = "";
+
+  const tableWrapper = document.createElement("div");
+  tableWrapper.className = "table-wrapper";
+
+  const table = document.createElement("table");
+  table.className = "report-table";
+
+  // HEADER
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+
+  columns.forEach(col => {
+    const th = document.createElement("th");
+    th.innerText = col;
+    headerRow.appendChild(th);
+  });
+
+  thead.appendChild(headerRow);
+  table.appendChild(thead);
+
+  // BODY
+  const tbody = document.createElement("tbody");
+
+  const visibleRows = rows.slice(0, loadCount);
+
+  visibleRows.forEach(row => {
+    const tr = document.createElement("tr");
+    columns.forEach(col => {
+      const td = document.createElement("td");
+      td.innerText = row[col] ?? "-";
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+
+  table.appendChild(tbody);
+  tableWrapper.appendChild(table);
+
+  // Load More
+  if (rows.length > loadCount) {
+    const loadMoreBtn = document.createElement("button");
+    loadMoreBtn.className = "load-more-btn";
+    loadMoreBtn.innerText = "Load More";
+
+    loadMoreBtn.onclick = () => {
+      renderTableReport(columns, rows, loadCount + 50);
+    };
+
+    tableWrapper.appendChild(loadMoreBtn);
+  }
+
+  reportSection.appendChild(tableWrapper);
+}
+
+/* ======================================
+   SUMMARY
 ====================================== */
 
 function renderSummary(summary) {
@@ -23,61 +114,32 @@ function renderSummary(summary) {
   container.innerHTML = "";
 
   const cards = [
-    {
-      title: "Total Revenue",
-      value: formatCurrency(summary.totals.revenue),
-      sub: formatGrowth(summary.growth.revenueMoM)
-    },
-    {
-      title: "Total Views",
-      value: formatNumber(summary.totals.views),
-      sub: ""
-    },
-    {
-      title: "CTR",
-      value: formatPercent(summary.kpis.ctr),
-      sub: ""
-    },
-    {
-      title: "CVR",
-      value: formatPercent(summary.kpis.cvr),
-      sub: ""
-    },
-    {
-      title: "Return %",
-      value: formatPercent(summary.kpis.returnRate),
-      sub: ""
-    },
-    {
-      title: "Avg DOI",
-      value: formatNumber(summary.kpis.avgDoi),
-      sub: ""
-    }
+    ["Total Revenue", formatCurrency(summary.totals.revenue)],
+    ["Total Views", formatNumber(summary.totals.views)],
+    ["CTR", formatPercent(summary.kpis.ctr)],
+    ["CVR", formatPercent(summary.kpis.cvr)],
+    ["Return %", formatPercent(summary.kpis.returnRate)],
+    ["Avg DOI", formatNumber(summary.kpis.avgDoi)]
   ];
 
   cards.forEach(card => {
-    const cardEl = document.createElement("div");
-    cardEl.className = "summary-card";
-
-    cardEl.innerHTML = `
-      <div class="summary-title">${card.title}</div>
-      <div class="summary-value">${card.value}</div>
-      <div class="summary-sub">${card.sub}</div>
+    const div = document.createElement("div");
+    div.className = "summary-card";
+    div.innerHTML = `
+      <div class="summary-title">${card[0]}</div>
+      <div class="summary-value">${card[1]}</div>
     `;
-
-    container.appendChild(cardEl);
+    container.appendChild(div);
   });
 }
 
 /* ======================================
-   CHART RENDERING
+   CHARTS
 ====================================== */
 
-function renderCharts(charts = []) {
-  if (!Array.isArray(charts)) return;
-
-  charts.forEach(chartData => {
-    renderChart(chartData);
+function renderCharts(charts) {
+  charts.forEach(chart => {
+    renderChart(chart);
   });
 }
 
@@ -86,32 +148,17 @@ function renderCharts(charts = []) {
 ====================================== */
 
 function formatCurrency(value) {
-  if (!value && value !== 0) return "₹0";
-
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0
-  }).format(value);
+  }).format(value || 0);
 }
 
 function formatNumber(value) {
-  if (!value && value !== 0) return "0";
-
-  return new Intl.NumberFormat("en-IN").format(Math.round(value));
+  return new Intl.NumberFormat("en-IN").format(Math.round(value || 0));
 }
 
 function formatPercent(value) {
-  if (!value && value !== 0) return "0%";
-
-  return `${(value * 100).toFixed(2)}%`;
-}
-
-function formatGrowth(value) {
-  if (value === null || value === undefined) return "";
-
-  const percent = (value * 100).toFixed(2);
-  const arrow = value >= 0 ? "▲" : "▼";
-
-  return `${arrow} ${percent}% MoM`;
+  return `${((value || 0) * 100).toFixed(2)}%`;
 }
