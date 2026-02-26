@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Flipkart Analytics & Decision Engine</title>
 
+  <!-- ✅ FAVICON PLACEHOLDER -->
+  <link rel="icon" type="image/png" href="./assets/favicon.png" />
+
   <link rel="stylesheet" href="./css/reset.css" />
   <link rel="stylesheet" href="./css/variables.css" />
   <link rel="stylesheet" href="./css/layout.css" />
   <link rel="stylesheet" href="./css/components.css" />
+
+  <!-- ApexCharts -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
@@ -18,7 +23,11 @@
   <!-- HEADER -->
   <header id="app-header">
     <div id="header-left">
-      <img src="./assets/logo.png" alt="Logo" id="app-logo" />
+      <!-- ✅ LOGO SPACE -->
+      <img src="./assets/logo.png"
+           alt="Company Logo"
+           id="app-logo"
+           onerror="this.style.display='none';" />
     </div>
 
     <div id="header-center">
@@ -61,9 +70,8 @@
     <!-- MAIN CONTENT -->
     <main id="main-content">
 
-      <!-- FILTERS + SEARCH -->
+      <!-- FILTER + SEARCH -->
       <section id="filter-search-section">
-
         <div id="filters-left">
           <div class="filter-box">Month</div>
           <div class="filter-box">Date Range</div>
@@ -74,85 +82,45 @@
         </div>
 
         <div id="search-right">
-          <input type="text" id="sku-search" placeholder="Search SKU / Style..." />
+          <input type="text"
+                 id="sku-search"
+                 placeholder="Search SKU / Style..." />
         </div>
-
       </section>
 
-      <!-- SUMMARY SECTION -->
-      <section id="summary-section">
-        <div class="summary-card"></div>
-        <div class="summary-card"></div>
-        <div class="summary-card"></div>
-        <div class="summary-card"></div>
-        <div class="summary-card"></div>
-        <div class="summary-card"></div>
+      <!-- EXECUTIVE SECTION -->
+      <section id="report-section">
+
+        <section id="executive-dashboard">
+
+          <div id="executive-summary-container"></div>
+
+          <div id="executive-charts-container">
+
+            <div class="chart-row full-width">
+              <div id="chart-revenueTrend" class="chart-box"></div>
+            </div>
+
+            <div class="chart-row two-col">
+              <div id="chart-conversionFunnel" class="chart-box"></div>
+              <div id="chart-qualityMetrics" class="chart-box"></div>
+            </div>
+
+            <div class="chart-row full-width">
+              <div id="chart-inventoryHealth" class="chart-box"></div>
+            </div>
+
+          </div>
+
+        </section>
+
       </section>
-
-      <!-- REPORT SECTION -->
-    <section id="report-section">
-
-  <section id="executive-dashboard">
-
-    <div id="executive-summary-container"></div>
-
-    <div id="executive-charts-container">
-
-      <div class="chart-row full-width">
-        <div id="chart-revenueTrend" class="chart-box"></div>
-      </div>
-
-      <div class="chart-row two-col">
-        <div id="chart-conversionFunnel" class="chart-box"></div>
-        <div id="chart-qualityMetrics" class="chart-box"></div>
-      </div>
-
-      <div class="chart-row full-width">
-        <div id="chart-inventoryHealth" class="chart-box"></div>
-      </div>
-
-    </div>
-
-  </section>
-
-</section>
 
     </main>
   </div>
 </div>
 
-<script>
-/* Sidebar Toggle */
-document.getElementById("sidebar-toggle").addEventListener("click", function () {
-  document.getElementById("sidebar").classList.toggle("collapsed");
-});
-
-/* Simulated Progress Auto Hide */
-function updateProgress(percent) {
-  const fill = document.getElementById("progress-bar-fill");
-  const text = document.getElementById("progress-percentage");
-  const section = document.getElementById("progress-section");
-  const status = document.getElementById("progress-status");
-
-  fill.style.width = percent + "%";
-  text.innerText = percent + "%";
-
-  if (percent >= 100) {
-    fill.style.background = "var(--success)";
-    status.innerText = "All Data Loaded Successfully";
-    setTimeout(() => {
-      section.style.display = "none";
-    }, 2000);
-  }
-}
-
-/* Demo only */
-setTimeout(() => updateProgress(30), 500);
-setTimeout(() => updateProgress(70), 1000);
-setTimeout(() => updateProgress(100), 1500);
-</script>
+<script type="module" src="./js/main.js"></script>
 
 </body>
 </html>
-
-
