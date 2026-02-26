@@ -96,7 +96,7 @@
         </div>
 
         <div id="report-table-container">
-          <!-- Table will render here -->
+          <!-- Table renders here -->
         </div>
 
         <div id="load-more-container">
@@ -109,7 +109,36 @@
   </div>
 </div>
 
-<script type="module" src="./js/main.js"></script>
+<script>
+/* Sidebar Toggle */
+document.getElementById("sidebar-toggle").addEventListener("click", function () {
+  document.getElementById("sidebar").classList.toggle("collapsed");
+});
+
+/* Simulated Progress Auto Hide */
+function updateProgress(percent) {
+  const fill = document.getElementById("progress-bar-fill");
+  const text = document.getElementById("progress-percentage");
+  const section = document.getElementById("progress-section");
+  const status = document.getElementById("progress-status");
+
+  fill.style.width = percent + "%";
+  text.innerText = percent + "%";
+
+  if (percent >= 100) {
+    fill.style.background = "var(--success)";
+    status.innerText = "All Data Loaded Successfully";
+    setTimeout(() => {
+      section.style.display = "none";
+    }, 2000);
+  }
+}
+
+/* Demo only */
+setTimeout(() => updateProgress(30), 500);
+setTimeout(() => updateProgress(70), 1000);
+setTimeout(() => updateProgress(100), 1500);
+</script>
 
 </body>
 </html>
