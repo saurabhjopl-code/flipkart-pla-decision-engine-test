@@ -89,21 +89,30 @@
       </section>
 
       <!-- REPORT SECTION -->
-      <section id="report-section">
+     <section id="executive-dashboard">
 
-        <div id="report-header">
-          <h2>Report</h2>
-        </div>
+  <div id="executive-summary-container">
+      <!-- summary cards render here -->
+  </div>
 
-        <div id="report-table-container">
-          <!-- Table renders here -->
-        </div>
+  <div id="executive-charts-container">
 
-        <div id="load-more-container">
-          <button id="load-more-btn">Load More</button>
-        </div>
+      <div class="chart-row full-width">
+          <div id="chart-revenueTrend" class="chart-box"></div>
+      </div>
 
-      </section>
+      <div class="chart-row two-col">
+          <div id="chart-conversionFunnel" class="chart-box"></div>
+          <div id="chart-qualityMetrics" class="chart-box"></div>
+      </div>
+
+      <div class="chart-row full-width">
+          <div id="chart-inventoryHealth" class="chart-box"></div>
+      </div>
+
+  </div>
+
+</section>
 
     </main>
   </div>
@@ -142,3 +151,4 @@ setTimeout(() => updateProgress(100), 1500);
 
 </body>
 </html>
+
