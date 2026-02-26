@@ -71,22 +71,21 @@
     <main id="main-content">
 
       <!-- FILTER + SEARCH -->
-      <section id="filter-search-section">
-        <div id="filters-left">
-          <div class="filter-box">Month</div>
-          <div class="filter-box">Date Range</div>
-          <div class="filter-box">Category</div>
-          <div class="filter-box">Brand</div>
-          <div class="filter-box">Vertical</div>
-          <div class="filter-box">Style</div>
-        </div>
+     <section id="filter-search-section">
+  <div id="filters-left">
 
-        <div id="search-right">
-          <input type="text"
-                 id="sku-search"
-                 placeholder="Search SKU / Style..." />
-        </div>
-      </section>
+    <select id="month-filter" multiple class="filter-select"></select>
+    <select id="category-filter" multiple class="filter-select"></select>
+    <select id="brand-filter" multiple class="filter-select"></select>
+    <select id="vertical-filter" multiple class="filter-select"></select>
+    <select id="style-filter" multiple class="filter-select"></select>
+
+  </div>
+
+  <div id="search-right">
+    <input type="text" id="sku-search" placeholder="Search SKU / Style..." />
+  </div>
+</section>
 
       <!-- EXECUTIVE SECTION -->
       <section id="report-section">
@@ -124,3 +123,4 @@
 
 </body>
 </html>
+
