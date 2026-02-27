@@ -17,6 +17,8 @@ export const STATE = {
     filters: {
         account: null,
         startDate: null,
-        endDate: null
+        endDate: null,
+        month: null,
+        week: null
     }
 };
