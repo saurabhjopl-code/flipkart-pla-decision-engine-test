@@ -1,18 +1,21 @@
 :root {
 
-    --primary: #4f46e5;
-    --primary-dark: #4338ca;
+    /* Brand Inspired Colors (From Logo) */
+    --sidebar-bg: #e6f0ed;           /* Light sage */
+    --sidebar-accent: #c9a227;       /* Gold */
+    --sidebar-accent-soft: #f3e6b3;  /* Soft gold hover */
+    --sidebar-text: #1f4d4f;         /* Dark teal */
 
-    --sidebar-gradient-start: #4f46e5;
-    --sidebar-gradient-end: #6366f1;
+    --primary: #1f4d4f;
+    --primary-dark: #163c3d;
 
-    --bg-main: #f5f7fb;
+    --bg-main: #f8faf9;
     --bg-card: #ffffff;
 
-    --text-primary: #111827;
-    --text-secondary: #6b7280;
+    --text-primary: #1f2d2d;
+    --text-secondary: #6b7a7a;
 
-    --border-color: #e5e7eb;
+    --border-color: #e4ebe9;
 
     --radius: 10px;
 
