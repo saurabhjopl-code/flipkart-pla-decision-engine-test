@@ -1,34 +1,26 @@
-import { CONFIG } from "./config.js";
 import { STATE } from "./state.js";
-import { parseCSV, updateProgress } from "./utils.js";
 
-async function fetchSheet(url) {
+async function fetchCSV(url) {
     const res = await fetch(url);
     const text = await res.text();
-    return parseCSV(text);
+
+    const rows = text.trim().split("\n").map(r => r.split(","));
+    const headers = rows.shift();
+
+    return rows.map(r => {
+        const obj = {};
+        headers.forEach((h, i) => obj[h.trim()] = r[i]);
+        return obj;
+    });
 }
 
 export async function loadAllData() {
 
-    updateProgress(10);
+    STATE.raw.gmvDaily = await fetchCSV("GMV_URL");
+    STATE.raw.ctrDaily = await fetchCSV("CTR_URL");
+    STATE.raw.adsDaily = await fetchCSV("ADS_URL");
+    STATE.raw.campaign = await fetchCSV("CAMPAIGN_URL");
+    STATE.raw.keyword = await fetchCSV("KEYWORD_URL");
 
-    STATE.data.gmvDaily = await fetchSheet(CONFIG.SHEETS.GMV_DAILY);
-    updateProgress(25);
-
-    STATE.data.ctrDaily = await fetchSheet(CONFIG.SHEETS.CTR_DAILY);
-    updateProgress(40);
-
-    STATE.data.adsDaily = await fetchSheet(CONFIG.SHEETS.ADS_DAILY);
-    updateProgress(55);
-
-    STATE.data.campaign = await fetchSheet(CONFIG.SHEETS.CAMPAIGN);
-    updateProgress(70);
-
-    STATE.data.keyword = await fetchSheet(CONFIG.SHEETS.KEYWORD);
-    updateProgress(85);
-
-    STATE.data.dateMaster = await fetchSheet(CONFIG.SHEETS.DATE_MASTER);
-    updateProgress(100);
-
-    STATE.isLoaded = true;
+    STATE.data = { ...STATE.raw };
 }
