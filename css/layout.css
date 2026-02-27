@@ -16,15 +16,9 @@ body {
     width: 110px;
     background: var(--sidebar-bg);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 25px;
+    justify-content: center;
+    padding-top: 40px;
     border-right: 1px solid var(--border-color);
-}
-
-.sidebar-logo img {
-    width: 55px;
-    margin-bottom: 35px;
 }
 
 .sidebar-nav {
@@ -100,7 +94,4 @@ body {
 
 .summary-container {
     margin-bottom: 30px;
-}
-
-.report-container {
 }
