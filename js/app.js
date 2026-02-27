@@ -226,6 +226,16 @@ async function init() {
 
     await loadAllData();
     initFilters();
+
+    // 🔥 AUTO LOAD CURRENT MONTH
+    const today = new Date();
+    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+
+    STATE.filters.month = currentMonth;
+
+    const monthSelect = document.getElementById("monthFilter");
+    if (monthSelect) monthSelect.value = currentMonth;
+
     applyFilters();
 
     setTimeout(hideLoader, 400);
