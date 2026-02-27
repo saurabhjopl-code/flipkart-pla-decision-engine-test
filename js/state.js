@@ -1,26 +1,28 @@
 export const STATE = {
 
-    rawData: {
+    // RAW DATA (original sheets)
+    raw: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
         campaign: [],
         keyword: [],
-        placement: []
+        dateMaster: []
     },
 
+    // FILTERED DATA (working copy)
     data: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
         campaign: [],
-        keyword: [],
-        placement: []
+        keyword: []
     },
 
+    // FILTER STATE
     filters: {
-        account: "All",
-        month: "All",
+        account: null,
+        month: null,
         startDate: null,
         endDate: null
     }
