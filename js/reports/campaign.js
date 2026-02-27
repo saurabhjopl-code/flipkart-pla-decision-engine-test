@@ -1,23 +1,22 @@
 import { STATE } from "../state.js";
-import { sum } from "../utils.js";
+
+let campaignChart = null;
+
+function formatCurrency(num) {
+    return "₹ " + Number(num || 0).toLocaleString();
+}
 
 export function renderCampaignReport(container) {
 
-    if (!container) return;
-
-    const data = STATE.data.campaign || [];
-
     const grouped = {};
 
-    data.forEach(row => {
+    STATE.data.campaign.forEach(row => {
 
         const id = row["Campaign ID"];
-        const name = row["Campaign Name"];
 
         if (!grouped[id]) {
             grouped[id] = {
-                id,
-                name,
+                name: row["Campaign Name"],
                 views: 0,
                 clicks: 0,
                 spend: 0,
@@ -33,10 +32,15 @@ export function renderCampaignReport(container) {
         grouped[id].revenue += Number(row["Revenue (Ads)"] || 0);
     });
 
-    const rows = Object.values(grouped);
+    const ids = Object.keys(grouped);
 
     container.innerHTML = `
         <div class="section-title">Campaign Performance</div>
+
+        <div class="chart-wrapper">
+            <canvas id="campaignChart"></canvas>
+        </div>
+
         <table class="report-table">
             <thead>
                 <tr>
@@ -44,24 +48,72 @@ export function renderCampaignReport(container) {
                     <th>Campaign Name</th>
                     <th>Views</th>
                     <th>Clicks</th>
+                    <th>CTR (%)</th>
                     <th>Ad Spend</th>
-                    <th>Units</th>
+                    <th>Units Sold</th>
                     <th>Revenue</th>
+                    <th>ROI</th>
+                    <th>ACOS (%)</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                ${rows.map(r => `
-                    <tr>
-                        <td>${r.id}</td>
-                        <td>${r.name}</td>
-                        <td>${r.views}</td>
-                        <td>${r.clicks}</td>
-                        <td>₹ ${r.spend.toLocaleString()}</td>
-                        <td>${r.units}</td>
-                        <td>₹ ${r.revenue.toLocaleString()}</td>
-                    </tr>
-                `).join("")}
+                ${ids.map(id => {
+
+                    const g = grouped[id];
+                    const ctr = g.views ? ((g.clicks / g.views) * 100).toFixed(2) : 0;
+                    const roi = g.spend ? (g.revenue / g.spend).toFixed(2) : 0;
+                    const acos = g.revenue ? ((g.spend / g.revenue) * 100).toFixed(2) : 0;
+
+                    const action =
+                        roi > 4 ? "Scale" :
+                        roi < 1.5 ? "Stop" :
+                        "Hold";
+
+                    return `
+                        <tr>
+                            <td>${id}</td>
+                            <td>${g.name}</td>
+                            <td>${g.views}</td>
+                            <td>${g.clicks}</td>
+                            <td>${ctr}</td>
+                            <td>${formatCurrency(g.spend)}</td>
+                            <td>${g.units}</td>
+                            <td>${formatCurrency(g.revenue)}</td>
+                            <td>${roi}</td>
+                            <td>${acos}</td>
+                            <td>${action}</td>
+                        </tr>
+                    `;
+                }).join("")}
             </tbody>
         </table>
     `;
+
+    renderChart(ids, grouped);
+}
+
+function renderChart(ids, grouped) {
+
+    const ctx = document.getElementById("campaignChart");
+    if (!ctx) return;
+
+    if (campaignChart) campaignChart.destroy();
+
+    campaignChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: ids,
+            datasets: [
+                {
+                    label: "Ad Spend",
+                    data: ids.map(id => grouped[id].spend)
+                },
+                {
+                    label: "Revenue",
+                    data: ids.map(id => grouped[id].revenue)
+                }
+            ]
+        }
+    });
 }
