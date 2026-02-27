@@ -1,5 +1,4 @@
 import { STATE } from "./state.js";
-import { renderExecutive } from "./app.js";
 
 /* ===============================
    DATE NORMALIZER
@@ -84,7 +83,10 @@ export function applyFilters() {
         !STATE.filters.account || r["ACC"] === STATE.filters.account
     );
 
-    renderExecutive();
+    // 🔥 IMPORTANT FIX
+    if (window.renderCurrentPage) {
+        window.renderCurrentPage();
+    }
 }
 
 export function initFilters() {
