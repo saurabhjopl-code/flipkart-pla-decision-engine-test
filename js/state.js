@@ -1,23 +1,27 @@
 export const STATE = {
-    raw: {
+
+    rawData: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
         campaign: [],
         keyword: [],
-        dateMaster: []
+        placement: []
     },
+
     data: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
         campaign: [],
-        keyword: []
+        keyword: [],
+        placement: []
     },
+
     filters: {
-        account: null,
+        account: "All",
+        month: "All",
         startDate: null,
-        endDate: null,
-        month: null
+        endDate: null
     }
 };
