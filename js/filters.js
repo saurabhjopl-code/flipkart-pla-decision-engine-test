@@ -50,16 +50,7 @@ function matchDateFilters(row) {
             return false;
     }
 
-    if (STATE.filters.week) {
-        const match = STATE.raw.dateMaster.find(d => {
-            return normalizeDate(d["Date"]).getTime() === rowDate.getTime();
-        });
-
-        if (!match || match["Week Number"] !== STATE.filters.week)
-            return false;
-    }
-
-    return true;
+      return true;
 }
 
 function applyAllFilters(dataset) {
@@ -124,13 +115,6 @@ export function initFilters() {
         monthSelect.innerHTML += `<option value="${m}">${m}</option>`;
     });
 
-    // Weeks
-    const weeks = [...new Set(STATE.raw.dateMaster.map(r => r["Week Number"]))];
-    weekSelect.innerHTML = `<option value="">All Weeks</option>`;
-    weeks.forEach(w => {
-        weekSelect.innerHTML += `<option value="${w}">${w}</option>`;
-    });
-
     accountSelect.addEventListener("change", e => {
         STATE.filters.account = e.target.value || null;
         applyFilters();
@@ -151,10 +135,7 @@ export function initFilters() {
         applyFilters();
     });
 
-    weekSelect.addEventListener("change", e => {
-        STATE.filters.week = e.target.value || null;
-        applyFilters();
-    });
+   });
 
     resetBtn.addEventListener("click", () => {
 
