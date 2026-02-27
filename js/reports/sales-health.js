@@ -19,7 +19,7 @@ function getRevenueField() {
         : "Net Sales";
 }
 
-function consolidateByDate(data, revenueField) {
+function consolidate(data, revenueField) {
 
     const grouped = {};
 
@@ -55,12 +55,10 @@ function consolidateByDate(data, revenueField) {
 
 export function renderSalesHealth(container) {
 
-    if (!container) return;
-
-    const data = getDataset();
+    const dataset = getDataset();
     const revenueField = getRevenueField();
+    const grouped = consolidate(dataset, revenueField);
 
-    const grouped = consolidateByDate(data, revenueField);
     const dates = Object.keys(grouped).sort();
 
     container.innerHTML = `
@@ -121,12 +119,10 @@ function renderChart(dates, grouped) {
         type: "bar",
         data: {
             labels: dates,
-            datasets: [
-                {
-                    label: "Net Sales",
-                    data: dates.map(d => grouped[d].netSales)
-                }
-            ]
+            datasets: [{
+                label: "Net Sales",
+                data: dates.map(d => grouped[d].netSales)
+            }]
         }
     });
 }
