@@ -18,7 +18,6 @@ export const STATE = {
         account: null,
         startDate: null,
         endDate: null,
-        month: null,
-        week: null
-    }
+        month: null
+        }
 };
