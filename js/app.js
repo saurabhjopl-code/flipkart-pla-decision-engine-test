@@ -1,9 +1,15 @@
 import { loadAllData } from "./data-loader.js";
 import { STATE } from "./state.js";
 import { sum } from "./utils.js";
+import { initFilters, applyFilters } from "./filters.js";
 
 let adsChart = null;
 let salesChart = null;
+let currentRevenueType = "GMV";
+
+/* ===============================
+   HELPERS
+=================================*/
 
 function formatCurrency(num) {
     return "₹ " + Number(num || 0).toLocaleString();
@@ -49,6 +55,7 @@ function renderAdsSummary() {
 function renderAdsChart() {
 
     const ctx = document.getElementById("adsChart");
+    if (!ctx) return;
 
     const grouped = {};
 
@@ -129,6 +136,7 @@ function renderRevenueSummary(type = "GMV") {
 function renderSalesChart(type = "GMV") {
 
     const ctx = document.getElementById("salesChart");
+    if (!ctx) return;
 
     let dataset = [];
     let field = "";
@@ -169,11 +177,14 @@ function renderSalesChart(type = "GMV") {
 }
 
 /* ===============================
-   RENDER ALL
+   MAIN RENDER
 =================================*/
-function renderExecutive(type = "GMV") {
+export function renderExecutive(type = currentRevenueType) {
+
+    currentRevenueType = type;
 
     const container = document.getElementById("summaryContainer");
+    if (!container) return;
 
     container.innerHTML = `
         ${renderAdsSummary()}
@@ -192,13 +203,25 @@ function renderExecutive(type = "GMV") {
     renderSalesChart(type);
 }
 
+/* ===============================
+   TOGGLE HANDLER
+=================================*/
 window.switchRevenue = function(type) {
     renderExecutive(type);
 };
 
+/* ===============================
+   INIT
+=================================*/
 async function init() {
+
     await loadAllData();
-    renderExecutive();
+
+    // Initialize filters after data load
+    initFilters();
+
+    // Apply default filter (no filter)
+    applyFilters();
 }
 
 init();
