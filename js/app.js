@@ -14,15 +14,19 @@ let currentRevenueType = "GMV";
 function showLoader() {
     const bar = document.getElementById("progressBar");
     if (!bar) return;
-    bar.style.width = "40%";
-    setTimeout(() => bar.style.width = "70%", 100);
+
+    bar.style.width = "30%";
+    setTimeout(() => bar.style.width = "65%", 120);
 }
 
 function hideLoader() {
     const bar = document.getElementById("progressBar");
     if (!bar) return;
+
     bar.style.width = "100%";
-    setTimeout(() => bar.style.width = "0%", 400);
+    setTimeout(() => {
+        bar.style.width = "0%";
+    }, 400);
 }
 
 /* ===============================
@@ -46,6 +50,7 @@ function calculateACOS(revenue, spend) {
 /* ===============================
    ADS SUMMARY
 =================================*/
+
 function renderAdsSummary() {
 
     const totalRevenue = sum(STATE.data.adsDaily, "Revenue (Ads)");
@@ -68,8 +73,9 @@ function renderAdsSummary() {
 }
 
 /* ===============================
-   ADS CHART
+   ADS LINE CHART
 =================================*/
+
 function renderAdsChart() {
 
     const ctx = document.getElementById("adsChart");
@@ -105,6 +111,7 @@ function renderAdsChart() {
 /* ===============================
    REVENUE SUMMARY
 =================================*/
+
 function renderRevenueSummary(type = "GMV") {
 
     let revenueData = [];
@@ -139,8 +146,9 @@ function renderRevenueSummary(type = "GMV") {
 }
 
 /* ===============================
-   SALES CHART
+   SALES BAR CHART
 =================================*/
+
 function renderSalesChart(type = "GMV") {
 
     const ctx = document.getElementById("salesChart");
@@ -182,10 +190,10 @@ function renderSalesChart(type = "GMV") {
 /* ===============================
    MAIN RENDER
 =================================*/
+
 export function renderExecutive(type = currentRevenueType) {
 
     showLoader();
-
     currentRevenueType = type;
 
     const container = document.getElementById("summaryContainer");
@@ -213,6 +221,7 @@ export function renderExecutive(type = currentRevenueType) {
 /* ===============================
    TOGGLE HANDLER
 =================================*/
+
 window.switchRevenue = function(type) {
     renderExecutive(type);
 };
@@ -220,6 +229,7 @@ window.switchRevenue = function(type) {
 /* ===============================
    INIT
 =================================*/
+
 async function init() {
 
     showLoader();
@@ -227,9 +237,10 @@ async function init() {
     await loadAllData();
     initFilters();
 
-    // 🔥 AUTO LOAD CURRENT MONTH
+    // AUTO CURRENT MONTH
     const today = new Date();
-    const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`;
+    const currentMonth =
+        `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
 
     STATE.filters.month = currentMonth;
 
@@ -238,7 +249,7 @@ async function init() {
 
     applyFilters();
 
-    setTimeout(hideLoader, 400);
+    setTimeout(hideLoader, 500);
 }
 
 init();
