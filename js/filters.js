@@ -8,10 +8,8 @@ import { renderExecutive } from "./app.js";
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
 
-    // If already Date object
     if (dateStr instanceof Date) return dateStr;
 
-    // Remove time if exists
     dateStr = String(dateStr).split("T")[0];
 
     // yyyy-mm-dd
@@ -21,16 +19,10 @@ function normalizeDate(dateStr) {
 
     // dd-mm-yyyy
     if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-        const [dd, mm, yyyy] = dateStr.split("-");
-        return new Date(`${yyyy}-${mm}-${dd}`);
+        const parts = dateStr.split("-");
+        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
     }
 
-    // mm/dd/yyyy
-    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
-        return new Date(dateStr);
-    }
-
-    // Fallback
     const d = new Date(dateStr);
     if (!isNaN(d)) return d;
 
@@ -38,7 +30,7 @@ function normalizeDate(dateStr) {
 }
 
 /* ===============================
-   FILTER LOGIC
+   DATE MATCHING
 =================================*/
 
 function matchDateFilters(row) {
@@ -57,18 +49,26 @@ function matchDateFilters(row) {
     }
 
     if (STATE.filters.month) {
+
         const match = STATE.raw.dateMaster.find(d => {
-            return normalizeDate(d["Date"]).getTime() === rowDate.getTime();
+            const masterDate = normalizeDate(d["Date"]);
+            return masterDate && masterDate.getTime() === rowDate.getTime();
         });
 
-        if (!match || match["Year-Month (2026-02)"] !== STATE.filters.month)
+        if (!match) return false;
+
+        if (match["Year-Month (2026-02)"] !== STATE.filters.month)
             return false;
     }
 
-      return true;
+    return true;
 }
 
-function applyAllFilters(dataset) {
+/* ===============================
+   GENERIC FILTER
+=================================*/
+
+function applyDatasetFilter(dataset) {
 
     return dataset.filter(row => {
 
@@ -83,14 +83,14 @@ function applyAllFilters(dataset) {
 }
 
 /* ===============================
-   APPLY FILTERS
+   APPLY ALL FILTERS
 =================================*/
 
 export function applyFilters() {
 
-    STATE.data.gmvDaily = applyAllFilters(STATE.raw.gmvDaily);
-    STATE.data.ctrDaily = applyAllFilters(STATE.raw.ctrDaily);
-    STATE.data.adsDaily = applyAllFilters(STATE.raw.adsDaily);
+    STATE.data.gmvDaily = applyDatasetFilter(STATE.raw.gmvDaily);
+    STATE.data.ctrDaily = applyDatasetFilter(STATE.raw.ctrDaily);
+    STATE.data.adsDaily = applyDatasetFilter(STATE.raw.adsDaily);
 
     STATE.data.campaign = STATE.raw.campaign.filter(r =>
         !STATE.filters.account || r["ACC"] === STATE.filters.account
@@ -110,28 +110,36 @@ export function applyFilters() {
 export function initFilters() {
 
     const accountSelect = document.getElementById("accountFilter");
+    const monthSelect = document.getElementById("monthFilter");
     const startInput = document.getElementById("startDate");
     const endInput = document.getElementById("endDate");
-    const monthSelect = document.getElementById("monthFilter");
-    const weekSelect = document.getElementById("weekFilter");
     const resetBtn = document.getElementById("resetFilters");
 
-    // Accounts
+    /* ACCOUNTS */
     const accounts = [...new Set(STATE.raw.gmvDaily.map(r => r["ACC"]))];
+
     accountSelect.innerHTML = `<option value="">All Accounts</option>`;
     accounts.forEach(acc => {
         accountSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
     });
 
-    // Months
+    /* MONTHS */
     const months = [...new Set(STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"]))];
+
     monthSelect.innerHTML = `<option value="">All Months</option>`;
     months.forEach(m => {
         monthSelect.innerHTML += `<option value="${m}">${m}</option>`;
     });
 
+    /* EVENTS */
+
     accountSelect.addEventListener("change", e => {
         STATE.filters.account = e.target.value || null;
+        applyFilters();
+    });
+
+    monthSelect.addEventListener("change", e => {
+        STATE.filters.month = e.target.value || null;
         applyFilters();
     });
 
@@ -145,28 +153,17 @@ export function initFilters() {
         applyFilters();
     });
 
-    monthSelect.addEventListener("change", e => {
-        STATE.filters.month = e.target.value || null;
-        applyFilters();
-    });
-
-   });
-
     resetBtn.addEventListener("click", () => {
 
-        STATE.filters = {
-            account: null,
-            startDate: null,
-            endDate: null,
-            month: null,
-            week: null
-        };
+        STATE.filters.account = null;
+        STATE.filters.month = null;
+        STATE.filters.startDate = null;
+        STATE.filters.endDate = null;
 
         accountSelect.value = "";
+        monthSelect.value = "";
         startInput.value = "";
         endInput.value = "";
-        monthSelect.value = "";
-        weekSelect.value = "";
 
         applyFilters();
     });
