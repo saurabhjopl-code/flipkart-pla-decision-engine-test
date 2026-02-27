@@ -1,30 +1,62 @@
 import { STATE } from "./state.js";
 import { renderExecutive } from "./app.js";
 
-function parseDate(d) {
-    return new Date(d);
+/* ===============================
+   DATE NORMALIZER
+=================================*/
+
+function normalizeDate(dateStr) {
+    if (!dateStr) return null;
+
+    // If already yyyy-mm-dd
+    if (dateStr.includes("-") && dateStr.split("-")[0].length === 4) {
+        return new Date(dateStr);
+    }
+
+    // Convert dd-mm-yyyy to yyyy-mm-dd
+    const parts = dateStr.split("-");
+    if (parts.length === 3) {
+        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    }
+
+    return new Date(dateStr);
 }
+
+/* ===============================
+   FILTER LOGIC
+=================================*/
 
 function matchDateFilters(row) {
 
-    const rowDate = parseDate(row["Date"]);
+    const rowDate = normalizeDate(row["Date"]);
+    if (!rowDate) return false;
 
     if (STATE.filters.startDate) {
-        if (rowDate < parseDate(STATE.filters.startDate)) return false;
+        const start = new Date(STATE.filters.startDate);
+        if (rowDate < start) return false;
     }
 
     if (STATE.filters.endDate) {
-        if (rowDate > parseDate(STATE.filters.endDate)) return false;
+        const end = new Date(STATE.filters.endDate);
+        if (rowDate > end) return false;
     }
 
     if (STATE.filters.month) {
-        const monthRow = STATE.raw.dateMaster.find(d => d["Date"] === row["Date"]);
-        if (!monthRow || monthRow["Year-Month (2026-02)"] !== STATE.filters.month) return false;
+        const match = STATE.raw.dateMaster.find(d => {
+            return normalizeDate(d["Date"]).getTime() === rowDate.getTime();
+        });
+
+        if (!match || match["Year-Month (2026-02)"] !== STATE.filters.month)
+            return false;
     }
 
     if (STATE.filters.week) {
-        const weekRow = STATE.raw.dateMaster.find(d => d["Date"] === row["Date"]);
-        if (!weekRow || weekRow["Week Number"] !== STATE.filters.week) return false;
+        const match = STATE.raw.dateMaster.find(d => {
+            return normalizeDate(d["Date"]).getTime() === rowDate.getTime();
+        });
+
+        if (!match || match["Week Number"] !== STATE.filters.week)
+            return false;
     }
 
     return true;
@@ -34,13 +66,19 @@ function applyAllFilters(dataset) {
 
     return dataset.filter(row => {
 
-        if (STATE.filters.account && row["ACC"] !== STATE.filters.account) return false;
+        if (STATE.filters.account && row["ACC"] !== STATE.filters.account)
+            return false;
 
-        if (!matchDateFilters(row)) return false;
+        if (!matchDateFilters(row))
+            return false;
 
         return true;
     });
 }
+
+/* ===============================
+   APPLY FILTERS
+=================================*/
 
 export function applyFilters() {
 
@@ -59,6 +97,10 @@ export function applyFilters() {
     renderExecutive();
 }
 
+/* ===============================
+   INIT FILTERS
+=================================*/
+
 export function initFilters() {
 
     const accountSelect = document.getElementById("accountFilter");
@@ -68,21 +110,21 @@ export function initFilters() {
     const weekSelect = document.getElementById("weekFilter");
     const resetBtn = document.getElementById("resetFilters");
 
-    // ACCOUNTS
+    // Accounts
     const accounts = [...new Set(STATE.raw.gmvDaily.map(r => r["ACC"]))];
     accountSelect.innerHTML = `<option value="">All Accounts</option>`;
     accounts.forEach(acc => {
         accountSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
     });
 
-    // MONTHS
+    // Months
     const months = [...new Set(STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"]))];
     monthSelect.innerHTML = `<option value="">All Months</option>`;
     months.forEach(m => {
         monthSelect.innerHTML += `<option value="${m}">${m}</option>`;
     });
 
-    // WEEKS
+    // Weeks
     const weeks = [...new Set(STATE.raw.dateMaster.map(r => r["Week Number"]))];
     weekSelect.innerHTML = `<option value="">All Weeks</option>`;
     weeks.forEach(w => {
