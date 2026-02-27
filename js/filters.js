@@ -2,43 +2,30 @@ import { STATE } from "./state.js";
 import { renderExecutive } from "./app.js";
 
 /* ===============================
-   STRICT DATE NORMALIZER
+   DATE NORMALIZER
 =================================*/
 
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
 
-    if (dateStr instanceof Date) return dateStr;
-
     dateStr = String(dateStr).split("T")[0];
 
-    // yyyy-mm-dd
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr))
         return new Date(dateStr);
-    }
 
-    // dd-mm-yyyy
     if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
         const [dd, mm, yyyy] = dateStr.split("-");
-        return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+        return new Date(yyyy, mm - 1, dd);
     }
 
-    // dd/mm/yyyy  (IMPORTANT FIX)
     if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
         const [dd, mm, yyyy] = dateStr.split("/");
-        return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+        return new Date(yyyy, mm - 1, dd);
     }
 
-    // fallback
     const d = new Date(dateStr);
-    if (!isNaN(d)) return d;
-
-    return null;
+    return isNaN(d) ? null : d;
 }
-
-/* ===============================
-   EXTRACT YYYY-MM
-=================================*/
 
 function getYearMonth(dateObj) {
     const yyyy = dateObj.getFullYear();
@@ -46,43 +33,34 @@ function getYearMonth(dateObj) {
     return `${yyyy}-${mm}`;
 }
 
-/* ===============================
-   DATE FILTER
-=================================*/
-
 function matchDateFilters(row) {
 
     const rowDate = normalizeDate(row["Date"]);
     if (!rowDate) return false;
 
+    if (STATE.filters.month) {
+        if (getYearMonth(rowDate) !== STATE.filters.month)
+            return false;
+    }
+
     if (STATE.filters.startDate) {
-        const start = new Date(STATE.filters.startDate);
-        if (rowDate < start) return false;
+        if (rowDate < new Date(STATE.filters.startDate))
+            return false;
     }
 
     if (STATE.filters.endDate) {
-        const end = new Date(STATE.filters.endDate);
-        if (rowDate > end) return false;
-    }
-
-    if (STATE.filters.month) {
-        const rowYM = getYearMonth(rowDate);
-        if (rowYM !== STATE.filters.month)
+        if (rowDate > new Date(STATE.filters.endDate))
             return false;
     }
 
     return true;
 }
 
-/* ===============================
-   GENERIC FILTER
-=================================*/
-
 function applyDatasetFilter(dataset) {
-
     return dataset.filter(row => {
 
-        if (STATE.filters.account && row["ACC"] !== STATE.filters.account)
+        if (STATE.filters.account &&
+            row["ACC"] !== STATE.filters.account)
             return false;
 
         if (!matchDateFilters(row))
@@ -91,10 +69,6 @@ function applyDatasetFilter(dataset) {
         return true;
     });
 }
-
-/* ===============================
-   APPLY FILTERS
-=================================*/
 
 export function applyFilters() {
 
@@ -113,10 +87,6 @@ export function applyFilters() {
     renderExecutive();
 }
 
-/* ===============================
-   INIT FILTERS
-=================================*/
-
 export function initFilters() {
 
     const accountSelect = document.getElementById("accountFilter");
@@ -125,7 +95,6 @@ export function initFilters() {
     const endInput = document.getElementById("endDate");
     const resetBtn = document.getElementById("resetFilters");
 
-    /* ACCOUNTS */
     const accounts = [...new Set(STATE.raw.gmvDaily.map(r => r["ACC"]))];
 
     accountSelect.innerHTML = `<option value="">All Accounts</option>`;
@@ -133,7 +102,6 @@ export function initFilters() {
         accountSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
     });
 
-    /* MONTHS */
     const months = [...new Set(
         STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"])
     )];
@@ -142,8 +110,6 @@ export function initFilters() {
     months.forEach(m => {
         monthSelect.innerHTML += `<option value="${m}">${m}</option>`;
     });
-
-    /* EVENTS */
 
     accountSelect.addEventListener("change", e => {
         STATE.filters.account = e.target.value || null;
@@ -167,10 +133,12 @@ export function initFilters() {
 
     resetBtn.addEventListener("click", () => {
 
-        STATE.filters.account = null;
-        STATE.filters.month = null;
-        STATE.filters.startDate = null;
-        STATE.filters.endDate = null;
+        STATE.filters = {
+            account: null,
+            month: null,
+            startDate: null,
+            endDate: null
+        };
 
         accountSelect.value = "";
         monthSelect.value = "";
