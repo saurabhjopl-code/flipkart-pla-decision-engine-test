@@ -1,7 +1,5 @@
-// Global Application State
-
 export const STATE = {
-    data: {
+    raw: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
@@ -9,15 +7,16 @@ export const STATE = {
         keyword: [],
         dateMaster: []
     },
-
-    filters: {
-        account: "ALL",
-        startDate: null,
-        endDate: null,
-        month: "ALL",
-        week: "ALL"
+    data: {
+        gmvDaily: [],
+        ctrDaily: [],
+        adsDaily: [],
+        campaign: [],
+        keyword: []
     },
-
-    currentPage: "executive",
-    isLoaded: false
+    filters: {
+        account: null,
+        startDate: null,
+        endDate: null
+    }
 };
