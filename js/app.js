@@ -8,6 +8,24 @@ let salesChart = null;
 let currentRevenueType = "GMV";
 
 /* ===============================
+   PROGRESS BAR CONTROL
+=================================*/
+
+function showLoader() {
+    const bar = document.getElementById("progressBar");
+    if (!bar) return;
+    bar.style.width = "40%";
+    setTimeout(() => bar.style.width = "70%", 100);
+}
+
+function hideLoader() {
+    const bar = document.getElementById("progressBar");
+    if (!bar) return;
+    bar.style.width = "100%";
+    setTimeout(() => bar.style.width = "0%", 400);
+}
+
+/* ===============================
    HELPERS
 =================================*/
 
@@ -50,7 +68,7 @@ function renderAdsSummary() {
 }
 
 /* ===============================
-   ADS LINE CHART
+   ADS CHART
 =================================*/
 function renderAdsChart() {
 
@@ -77,18 +95,8 @@ function renderAdsChart() {
         data: {
             labels,
             datasets: [
-                {
-                    label: "Ad Spend",
-                    data: spendData,
-                    borderWidth: 2,
-                    tension: 0.3
-                },
-                {
-                    label: "Ads Revenue",
-                    data: revenueData,
-                    borderWidth: 2,
-                    tension: 0.3
-                }
+                { label: "Ad Spend", data: spendData, borderWidth: 2, tension: 0.3 },
+                { label: "Ads Revenue", data: revenueData, borderWidth: 2, tension: 0.3 }
             ]
         }
     });
@@ -131,7 +139,7 @@ function renderRevenueSummary(type = "GMV") {
 }
 
 /* ===============================
-   SALES BAR CHART
+   SALES CHART
 =================================*/
 function renderSalesChart(type = "GMV") {
 
@@ -166,12 +174,7 @@ function renderSalesChart(type = "GMV") {
         type: "bar",
         data: {
             labels,
-            datasets: [
-                {
-                    label: "Daily Sales",
-                    data: values
-                }
-            ]
+            datasets: [{ label: "Daily Sales", data: values }]
         }
     });
 }
@@ -180,6 +183,8 @@ function renderSalesChart(type = "GMV") {
    MAIN RENDER
 =================================*/
 export function renderExecutive(type = currentRevenueType) {
+
+    showLoader();
 
     currentRevenueType = type;
 
@@ -201,6 +206,8 @@ export function renderExecutive(type = currentRevenueType) {
 
     renderAdsChart();
     renderSalesChart(type);
+
+    setTimeout(hideLoader, 300);
 }
 
 /* ===============================
@@ -215,13 +222,13 @@ window.switchRevenue = function(type) {
 =================================*/
 async function init() {
 
+    showLoader();
+
     await loadAllData();
-
-    // Initialize filters after data load
     initFilters();
-
-    // Apply default filter (no filter)
     applyFilters();
+
+    setTimeout(hideLoader, 400);
 }
 
 init();
