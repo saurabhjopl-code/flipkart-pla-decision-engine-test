@@ -5,13 +5,10 @@
     <title>Flipkart Ads & Sales Report</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- PNG Favicon -->
     <link rel="icon" type="image/png" href="assets/favicon.png">
 
-    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- CSS -->
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -25,11 +22,9 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="sidebar-logo">
-            <img src="assets/logo.png" alt="Logo">
-        </div>
 
         <nav class="sidebar-nav">
+
             <div class="nav-item active" data-page="executive">
                 <span class="nav-icon">🏠</span>
                 <span class="nav-label">Overview</span>
@@ -59,6 +54,7 @@
                 <span class="nav-icon">📍</span>
                 <span class="nav-label">Placement</span>
             </div>
+
         </nav>
     </aside>
 
@@ -71,12 +67,12 @@
             <h1 class="header-title">Flipkart Ads & Sales Report</h1>
         </header>
 
-        <!-- PROGRESS BAR -->
+        <!-- PROGRESS -->
         <div class="progress-wrapper">
             <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <!-- FILTER BAR -->
+        <!-- FILTERS -->
         <section class="filters">
             <select id="accountFilter"></select>
             <select id="monthFilter"></select>
@@ -88,22 +84,14 @@
 
         <!-- CONTENT -->
         <main class="content">
-
-            <!-- SUMMARY CONTAINER -->
-            <section id="summaryContainer" class="summary-container">
-            </section>
-
-            <!-- REPORT CONTAINER -->
-            <section id="reportContainer" class="report-container">
-            </section>
-
+            <section id="summaryContainer" class="summary-container"></section>
+            <section id="reportContainer" class="report-container"></section>
         </main>
 
     </div>
 
 </div>
 
-<!-- JS -->
 <script src="js/config.js"></script>
 <script src="js/state.js"></script>
 <script src="js/data-loader.js"></script>
