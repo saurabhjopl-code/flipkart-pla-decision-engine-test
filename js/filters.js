@@ -2,7 +2,7 @@ import { STATE } from "./state.js";
 import { renderExecutive } from "./app.js";
 
 /* ===============================
-   DATE NORMALIZER
+   STRICT DATE NORMALIZER
 =================================*/
 
 function normalizeDate(dateStr) {
@@ -20,14 +20,16 @@ function normalizeDate(dateStr) {
     // dd-mm-yyyy
     if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
         const [dd, mm, yyyy] = dateStr.split("-");
-        return new Date(`${yyyy}-${mm}-${dd}`);
+        return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
     }
 
-    // mm/dd/yyyy
-    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
-        return new Date(dateStr);
+    // dd/mm/yyyy  (IMPORTANT FIX)
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+        const [dd, mm, yyyy] = dateStr.split("/");
+        return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
     }
 
+    // fallback
     const d = new Date(dateStr);
     if (!isNaN(d)) return d;
 
@@ -35,7 +37,7 @@ function normalizeDate(dateStr) {
 }
 
 /* ===============================
-   EXTRACT YYYY-MM FROM DATE
+   EXTRACT YYYY-MM
 =================================*/
 
 function getYearMonth(dateObj) {
@@ -45,7 +47,7 @@ function getYearMonth(dateObj) {
 }
 
 /* ===============================
-   DATE FILTER LOGIC
+   DATE FILTER
 =================================*/
 
 function matchDateFilters(row) {
@@ -73,7 +75,7 @@ function matchDateFilters(row) {
 }
 
 /* ===============================
-   GENERIC DATA FILTER
+   GENERIC FILTER
 =================================*/
 
 function applyDatasetFilter(dataset) {
@@ -131,7 +133,7 @@ export function initFilters() {
         accountSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
     });
 
-    /* MONTHS (From Date_Master only to populate dropdown) */
+    /* MONTHS */
     const months = [...new Set(
         STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"])
     )];
