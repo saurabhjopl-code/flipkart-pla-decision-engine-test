@@ -1,6 +1,6 @@
 export const STATE = {
 
-    // RAW DATA STORAGE
+    // RAW DATA STORAGE (used by data-loader.js)
     raw: {
         gmvDaily: [],
         ctrDaily: [],
@@ -10,7 +10,7 @@ export const STATE = {
         dateMaster: []
     },
 
-    // FILTERED WORKING DATA
+    // FILTERED DATA (used by filters.js & app.js)
     data: {
         gmvDaily: [],
         ctrDaily: [],
@@ -20,7 +20,7 @@ export const STATE = {
         dateMaster: []
     },
 
-    // FILTER STATE
+    // FILTERS
     filters: {
         account: null,
         month: null,
