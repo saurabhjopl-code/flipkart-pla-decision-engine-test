@@ -3,6 +3,12 @@ import { STATE } from "./state.js";
 import { sum } from "./utils.js";
 import { initFilters, applyFilters } from "./filters.js";
 
+import { renderSalesHealth } from "./reports/sales-health.js";
+import { renderSpendVsSales } from "./reports/spend-vs-sales.js";
+import { renderCampaignReport } from "./reports/campaign.js";
+import { renderKeywordReport } from "./reports/keyword.js";
+import { renderPlacementReport } from "./reports/placement.js";
+
 let adsChart = null;
 let salesChart = null;
 let currentRevenueType = "GMV";
@@ -188,7 +194,7 @@ function renderSalesChart(type = "GMV") {
 }
 
 /* ===============================
-   MAIN RENDER
+   MAIN RENDER (EXECUTIVE)
 =================================*/
 
 export function renderExecutive(type = currentRevenueType) {
@@ -196,10 +202,14 @@ export function renderExecutive(type = currentRevenueType) {
     showLoader();
     currentRevenueType = type;
 
-    const container = document.getElementById("summaryContainer");
-    if (!container) return;
+    const summaryContainer = document.getElementById("summaryContainer");
+    const reportContainer = document.getElementById("reportContainer");
 
-    container.innerHTML = `
+    if (!summaryContainer || !reportContainer) return;
+
+    reportContainer.innerHTML = "";
+
+    summaryContainer.innerHTML = `
         ${renderAdsSummary()}
         <div class="chart-wrapper">
             <div class="section-title">Daily Ads Spend vs Revenue</div>
@@ -227,6 +237,57 @@ window.switchRevenue = function(type) {
 };
 
 /* ===============================
+   REPORT NAVIGATION
+=================================*/
+
+function loadReport(page) {
+
+    const summaryContainer = document.getElementById("summaryContainer");
+    const reportContainer = document.getElementById("reportContainer");
+
+    if (!summaryContainer || !reportContainer) return;
+
+    if (page === "executive") {
+        renderExecutive();
+        return;
+    }
+
+    summaryContainer.innerHTML = "";
+    reportContainer.innerHTML = "";
+
+    switch (page) {
+        case "sales-health":
+            renderSalesHealth(reportContainer);
+            break;
+        case "spend-vs-sales":
+            renderSpendVsSales(reportContainer);
+            break;
+        case "campaign":
+            renderCampaignReport(reportContainer);
+            break;
+        case "keyword":
+            renderKeywordReport(reportContainer);
+            break;
+        case "placement":
+            renderPlacementReport(reportContainer);
+            break;
+    }
+}
+
+function initNavigation() {
+    const navItems = document.querySelectorAll(".nav-item");
+
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            navItems.forEach(n => n.classList.remove("active"));
+            item.classList.add("active");
+            const page = item.getAttribute("data-page");
+            loadReport(page);
+        });
+    });
+}
+
+/* ===============================
    INIT
 =================================*/
 
@@ -236,8 +297,8 @@ async function init() {
 
     await loadAllData();
     initFilters();
+    initNavigation();
 
-    // AUTO CURRENT MONTH
     const today = new Date();
     const currentMonth =
         `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,"0")}`;
