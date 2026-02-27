@@ -19,8 +19,13 @@ function normalizeDate(dateStr) {
 
     // dd-mm-yyyy
     if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
-        const parts = dateStr.split("-");
-        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        const [dd, mm, yyyy] = dateStr.split("-");
+        return new Date(`${yyyy}-${mm}-${dd}`);
+    }
+
+    // mm/dd/yyyy
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+        return new Date(dateStr);
     }
 
     const d = new Date(dateStr);
@@ -30,7 +35,17 @@ function normalizeDate(dateStr) {
 }
 
 /* ===============================
-   DATE MATCHING
+   EXTRACT YYYY-MM FROM DATE
+=================================*/
+
+function getYearMonth(dateObj) {
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, "0");
+    return `${yyyy}-${mm}`;
+}
+
+/* ===============================
+   DATE FILTER LOGIC
 =================================*/
 
 function matchDateFilters(row) {
@@ -49,15 +64,8 @@ function matchDateFilters(row) {
     }
 
     if (STATE.filters.month) {
-
-        const match = STATE.raw.dateMaster.find(d => {
-            const masterDate = normalizeDate(d["Date"]);
-            return masterDate && masterDate.getTime() === rowDate.getTime();
-        });
-
-        if (!match) return false;
-
-        if (match["Year-Month (2026-02)"] !== STATE.filters.month)
+        const rowYM = getYearMonth(rowDate);
+        if (rowYM !== STATE.filters.month)
             return false;
     }
 
@@ -65,7 +73,7 @@ function matchDateFilters(row) {
 }
 
 /* ===============================
-   GENERIC FILTER
+   GENERIC DATA FILTER
 =================================*/
 
 function applyDatasetFilter(dataset) {
@@ -83,7 +91,7 @@ function applyDatasetFilter(dataset) {
 }
 
 /* ===============================
-   APPLY ALL FILTERS
+   APPLY FILTERS
 =================================*/
 
 export function applyFilters() {
@@ -123,8 +131,10 @@ export function initFilters() {
         accountSelect.innerHTML += `<option value="${acc}">${acc}</option>`;
     });
 
-    /* MONTHS */
-    const months = [...new Set(STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"]))];
+    /* MONTHS (From Date_Master only to populate dropdown) */
+    const months = [...new Set(
+        STATE.raw.dateMaster.map(r => r["Year-Month (2026-02)"])
+    )];
 
     monthSelect.innerHTML = `<option value="">All Months</option>`;
     months.forEach(m => {
