@@ -1,6 +1,6 @@
 export const STATE = {
 
-    // RAW DATA (original sheets)
+    // RAW DATA STORAGE
     raw: {
         gmvDaily: [],
         ctrDaily: [],
@@ -10,13 +10,14 @@ export const STATE = {
         dateMaster: []
     },
 
-    // FILTERED DATA (working copy)
+    // FILTERED WORKING DATA
     data: {
         gmvDaily: [],
         ctrDaily: [],
         adsDaily: [],
         campaign: [],
-        keyword: []
+        keyword: [],
+        dateMaster: []
     },
 
     // FILTER STATE
