@@ -20,9 +20,7 @@
 
 <div class="app">
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
-
         <nav class="sidebar-nav">
 
             <div class="nav-item active" data-page="executive">
@@ -58,21 +56,17 @@
         </nav>
     </aside>
 
-    <!-- MAIN -->
     <div class="main">
 
-        <!-- HEADER -->
         <header class="header">
             <img src="assets/logo.png" class="header-logo" alt="Logo">
             <h1 class="header-title">Flipkart Ads & Sales Report</h1>
         </header>
 
-        <!-- PROGRESS -->
         <div class="progress-wrapper">
             <div class="progress-bar" id="progressBar"></div>
         </div>
 
-        <!-- FILTERS -->
         <section class="filters">
             <select id="accountFilter"></select>
             <select id="monthFilter"></select>
@@ -82,7 +76,6 @@
             <button id="resetFilters">Reset</button>
         </section>
 
-        <!-- CONTENT -->
         <main class="content">
             <section id="summaryContainer" class="summary-container"></section>
             <section id="reportContainer" class="report-container"></section>
@@ -92,13 +85,8 @@
 
 </div>
 
-<script src="js/config.js"></script>
-<script src="js/state.js"></script>
-<script src="js/data-loader.js"></script>
-<script src="js/filters.js"></script>
-<script src="js/router.js"></script>
-<script src="js/utils.js"></script>
-<script src="js/app.js"></script>
+<!-- IMPORTANT: Load as module -->
+<script type="module" src="js/app.js"></script>
 
 </body>
 </html>
