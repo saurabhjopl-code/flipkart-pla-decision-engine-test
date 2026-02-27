@@ -19,5 +19,5 @@ export const STATE = {
         startDate: null,
         endDate: null,
         month: null
-        }
+    }
 };
