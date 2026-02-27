@@ -8,18 +8,33 @@ import { renderExecutive } from "./app.js";
 function normalizeDate(dateStr) {
     if (!dateStr) return null;
 
-    // If already yyyy-mm-dd
-    if (dateStr.includes("-") && dateStr.split("-")[0].length === 4) {
+    // If already Date object
+    if (dateStr instanceof Date) return dateStr;
+
+    // Remove time if exists
+    dateStr = String(dateStr).split("T")[0];
+
+    // yyyy-mm-dd
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
         return new Date(dateStr);
     }
 
-    // Convert dd-mm-yyyy to yyyy-mm-dd
-    const parts = dateStr.split("-");
-    if (parts.length === 3) {
-        return new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+    // dd-mm-yyyy
+    if (/^\d{2}-\d{2}-\d{4}$/.test(dateStr)) {
+        const [dd, mm, yyyy] = dateStr.split("-");
+        return new Date(`${yyyy}-${mm}-${dd}`);
     }
 
-    return new Date(dateStr);
+    // mm/dd/yyyy
+    if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateStr)) {
+        return new Date(dateStr);
+    }
+
+    // Fallback
+    const d = new Date(dateStr);
+    if (!isNaN(d)) return d;
+
+    return null;
 }
 
 /* ===============================
