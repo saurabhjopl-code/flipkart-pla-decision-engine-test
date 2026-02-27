@@ -1,1 +1,20 @@
-/* CSS Variables */
+:root {
+
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+
+    --sidebar-gradient-start: #4f46e5;
+    --sidebar-gradient-end: #6366f1;
+
+    --bg-main: #f5f7fb;
+    --bg-card: #ffffff;
+
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+
+    --border-color: #e5e7eb;
+
+    --radius: 10px;
+
+    --shadow-light: 0 4px 12px rgba(0,0,0,0.05);
+}
