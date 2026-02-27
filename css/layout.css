@@ -63,13 +63,14 @@ body {
 .progress-wrapper {
     height: 4px;
     background: var(--border-color);
+    overflow: hidden;
 }
 
 .progress-bar {
     height: 4px;
     width: 0%;
-    background: var(--sidebar-accent);
-    transition: width 0.3s ease;
+    background: linear-gradient(90deg, #1e5f5c, #caa243);
+    transition: width 0.35s ease;
 }
 
 /* FILTERS */
